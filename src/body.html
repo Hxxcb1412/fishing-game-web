@@ -1,0 +1,163 @@
+<div id="app">
+  <header class="masthead">
+    <div class="brand">
+      <div class="seal" aria-hidden="true">潮</div>
+      <div>
+        <h1>潮汐手札</h1>
+        <p>Tidewater Notes · 一本关于水边等待的观察笔记</p>
+      </div>
+    </div>
+    <div class="hud">
+      <div class="hud-item coin"><span class="k">潮币</span><span class="v" id="hud-coins">0</span></div>
+      <div class="hud-item"><span class="k">图鉴</span><span class="v" id="hud-dex">0/24</span></div>
+      <div class="hud-item"><span class="k">护渔</span><span class="v" id="hud-rep">0</span></div>
+      <button class="icon-btn" id="btn-sound" title="音效开关" aria-label="音效开关">♪</button>
+      <button class="icon-btn" id="btn-help" title="玩法说明" aria-label="玩法说明">?</button>
+    </div>
+  </header>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage" role="application" aria-label="垂钓场景">
+      <canvas id="scene"></canvas>
+      <div class="overlay">
+        <div class="water-tag" id="water-tag"><b>溪涧</b><i></i><span>晨 · 浅滩</span></div>
+        <div class="prompt" id="prompt" role="status" aria-live="polite">按住蓄力</div>
+        <div class="cast-bar" id="cast-bar">
+          <span class="lbl" id="cast-lbl">0%</span>
+          <div class="track"><div class="sweet" id="cast-sweet"></div><div class="fill" id="cast-fill"></div></div>
+        </div>
+        <div class="fight" id="fight">
+          <div class="tension">
+            <div class="cap"><b>张力</b><span id="tension-cap">0%</span></div>
+            <div class="bar">
+              <div class="zone" id="tension-zone"></div>
+              <div class="mark" id="tension-mark"></div>
+            </div>
+          </div>
+          <div class="stamina">
+            <div class="track"><div class="fill" id="stamina-fill"></div></div>
+            <div class="cap" id="stamina-cap">体力 · 0%</div>
+          </div>
+        </div>
+        <div class="catch-flash" id="catch-flash"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="pickers">
+        <div class="picker">
+          <span class="plabel">水域</span>
+          <div class="chips" id="water-chips"></div>
+        </div>
+        <div class="picker">
+          <span class="plabel">钓法</span>
+          <div class="chips" id="rig-chips">
+            <button class="chip on" data-rig="surface">浮钓</button>
+            <button class="chip" data-rig="bottom">底钓</button>
+          </div>
+        </div>
+        <div class="picker">
+          <span class="plabel">饵</span>
+          <div class="chips" id="bait-chips"></div>
+        </div>
+      </div>
+      <div class="action-zone">
+        <button class="btn-action" id="btn-action">抛 竿<span class="sub">按住</span></button>
+        <div class="hint" id="hint" role="status" aria-live="polite">按住按钮或 <span class="kbd">空格</span> 蓄力，松手抛竿</div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-tab="dex" role="tab">渔获手札</button>
+      <button class="tab" data-tab="gear" role="tab">渔具行</button>
+      <button class="tab" data-tab="guide" role="tab">钓法</button>
+    </div>
+
+    <section class="panel on" id="panel-dex">
+      <div class="dex-head"><h2>渔获记录</h2><span id="dex-count">0 / 24</span></div>
+      <div class="dex-grid" id="dex-grid"></div>
+      <p class="dex-note" id="dex-note">灰格是尚未谋面的鱼。选对<b>水层</b>与<b>饵</b>，比运气更重要。</p>
+    </section>
+
+    <section class="panel" id="panel-gear">
+      <h3 class="section-title">鱼竿</h3>
+      <div id="gear-rod"></div>
+      <h3 class="section-title">鱼线</h3>
+      <div id="gear-line"></div>
+      <h3 class="section-title">鱼饵</h3>
+      <div id="gear-baits"></div>
+      <p class="dex-note">鱼竿决定能抛多远；鱼线决定能扛多大张力。<b>深水才有大物</b>。</p>
+    </section>
+
+    <section class="panel" id="panel-guide">
+      <div class="guide">
+        <h3>一次完整的垂钓</h3>
+        <ol>
+          <li><b>抛竿</b> — 按住蓄力，松手抛出。越远水越深，深水藏大物。</li>
+          <li><b>等口</b> — 浮标轻颤是试探，<b>沉下去</b>才是真咬。试探时提竿会惊鱼。</li>
+          <li><b>提竿</b> — 浮标下沉后<b>马上</b>点击/按空格，错过就跑了。</li>
+          <li><b>控线</b> — 按住收线，把张力压在绿色区间。张力顶到顶会断线；松太久鱼会脱钩。</li>
+        </ol>
+        <div class="quote">钓鱼的九成时间在等，一成的输赢在手上。手札只记两件事：水层，和耐心。</div>
+        <h3>三个变量</h3>
+        <ul>
+          <li><b>水层</b>：浮钓钩在水面附近，底钓钩贴底。鲫鲤在底，白条翘嘴在中上。</li>
+          <li><b>饵</b>：蚯蚓通杀底层，玉米钓鲤草，亮片骗掠食鱼，雷蛙专攻草洞黑鱼。</li>
+          <li><b>水域</b>：溪涧多小鱼，湖库出四大家鱼，江湾有大物与保护物种。</li>
+        </ul>
+        <p>搭配不对路会<b>没口</b>：浮标安静地站两秒，然后被收回来。这不是运气问题，是水层和饵不对。</p>
+        <h3>手札</h3>
+        <p>钓到的鱼会进「渔获手札」，点开任意一条能看它的学名、水层与习性。二十四条记满，这一卷就算写完了。</p>
+        <h3>渔人档案</h3>
+        <div class="stats-grid" id="stats-grid"></div>
+        <h3>关于放流</h3>
+        <p>钓到<b>中华鲟、胭脂鱼</b>等保护物种，只能放流，并获得护渔声望。这是手札里唯一不能商量的规矩。</p>
+        <p class="src">鱼种形态、栖息水层与食性参考公开鱼类志及钓友图鉴整理；数值为玩法服务，不作垂钓指导。键盘：<span class="kbd">空格</span> 操作，<span class="kbd">Esc</span> 关闭弹窗。</p>
+        <button class="btn-reset" id="btn-reset">清空手札 · 重新开始</button>
+      </div>
+    </section>
+  </aside>
+</div>
+
+<div class="modal" id="result-modal" role="dialog" aria-modal="true" aria-labelledby="card-name">
+  <div class="card" id="result-card">
+    <div class="stamp" id="card-stamp">入护</div>
+    <div class="card-kicker" id="card-kicker">渔获 · No.01</div>
+    <h2 id="card-name">鲫鱼</h2>
+    <div class="latin" id="card-latin">Carassius auratus</div>
+    <div class="card-art"><img id="card-art" alt="" /></div>
+    <div class="stats">
+      <div><span class="k">重量</span><span class="v" id="card-weight">0.32 kg</span></div>
+      <div><span class="k">水层</span><span class="v" id="card-layer">底层</span></div>
+      <div><span class="k">潮币</span><span class="v" id="card-value">+12</span></div>
+    </div>
+    <div class="tagline" id="card-tagline">常见</div>
+    <p class="desc" id="card-desc"></p>
+    <div class="warn" id="card-warn" hidden></div>
+    <div class="card-actions" id="card-actions">
+      <button class="btn primary" id="card-ok">收进鱼护</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
+  <div class="card">
+    <div class="card-kicker">快速上手</div>
+    <h2 id="help-title" style="padding-right:0">三十秒学会</h2>
+    <div class="rule"></div>
+    <div class="guide" style="font-size:12.5px">
+      <ol>
+        <li>按住 <b>抛竿</b> 蓄力，松手把浮标甩出去——越远越深。</li>
+        <li>等浮标<b>沉下去</b>，立刻点击屏幕或按空格提竿。</li>
+        <li><b>按住</b>收线，让右侧张力针停在绿区；满格前别让它冲顶。</li>
+        <li>钓到的鱼进手札，卖鱼换潮币，去「渔具行」升级鱼竿和鱼线。</li>
+      </ol>
+      <div class="quote">看见中华鲟，记得放流。</div>
+    </div>
+    <div class="card-actions"><button class="btn primary" id="help-ok">开始垂钓</button></div>
+  </div>
+</div>
+
+<div id="toasts" aria-live="polite"></div>

@@ -47,6 +47,21 @@ python3 -m http.server 8080
 
 也可以直接把 `index.html` 丢到任意静态托管（GitHub Pages / Netlify / Vercel）。
 
+### 从源码构建
+
+源码按职责拆成三片，由 `build.mjs` 拼成单文件，无第三方依赖：
+
+```bash
+node build.mjs        # 读取 src/，输出 index.html
+```
+
+| 文件 | 内容 |
+|---|---|
+| `src/head.html` | `<head>` 与全部样式（设计令牌、布局、响应式、弹窗） |
+| `src/body.html` | 页面结构（报头、舞台、控制台、侧栏、弹窗） |
+| `src/game.js` | 全部逻辑：数据表、状态机、Canvas 渲染、输入、存档、音效 |
+| `build.mjs` | 拼接三段并写出 `index.html`，打印体积与行数 |
+
 ## 操作
 
 | 动作 | 鼠标 / 触屏 | 键盘 |
@@ -72,4 +87,6 @@ python3 -m http.server 8080
 
 ## 说明
 
-本仓库仅收录构建后的单文件成品 `index.html`。开发期的分片源码（`src/`）、合成脚本（`build.mjs`）与 Playwright 测试脚本未纳入版本库，以免仓库被测试产物与调试截图占满。
+仓库收录三类内容：构建后的单文件成品 `index.html`、可复现它的源码（`src/`）与构建脚本（`build.mjs`）、本说明文档。
+
+Playwright 测试脚本、鱼种覆盖模拟、帧率测量与取图脚本，以及调试截图、`dist/` 发布产物均不在版本库内——它们体积大、可重跑，且与成品无关。`.gitignore` 采用白名单式写法（`/*` 全部忽略后再逐个放行），因此 `git add .` 不会把它们带进来。
